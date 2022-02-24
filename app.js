@@ -9,7 +9,7 @@
  */
 const fs = require("fs");
 const readlineSync = require("readline-sync")
-const nekopost1 = require("./webHandle/nekopost.js");
+const nekopost = require("./webHandle/nekopost.js");
 const yuta = require("./webHandle/yuta.js");
 
 (async () => {
@@ -29,6 +29,7 @@ const yuta = require("./webHandle/yuta.js");
             const type = ["comic", "manga", "novel"];
             const indexType = readlineSync.keyInSelect(type, "Which type you want to scrape?");
             const seriesId = readlineSync.question("What is ID of the series?");
+            await nekopost(type[indexType], seriesId, folderName);
             break;
         case 1:
             // thatjapanesecourse.com
