@@ -51,17 +51,17 @@ function scraping(url, folderName) {
 
     // scraping and downloading
     switch(indexWebsite) {
-        case 1:
+        case 0:
             // nekopost.com
             const type = ["comic", "manga", "novel"];
             const indexType = readlineSync.keyInSelect(type, "Which type you want to scrape?");
             const seriesId = readlineSync.question("What is ID of the series?");
             break;
-        case 2:
+        case 1:
             // thatjapanesecourse.com
             console.log("This will scrape all of the video in thatjapanesecourse.com");
             break;
-        case 3:
+        case 2:
             // youtube.com
             break;
     }
