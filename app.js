@@ -8,10 +8,7 @@
  * 
  */
 const fs = require("fs");
-const readline = require("readline").createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+const readlineSync = require("readline-sync")
 const puppeteer = require("puppeteer");
 const nekopost1 = require("./webHandle/nekopost1.js");
 const yuta = require("./webHandle/yuta.js");
@@ -43,16 +40,13 @@ function scraping(url, folderName) {
 }
 
 // Receieved data from user
-readline.question("What URL you want to scrape?", (url) => {
-    readline.question("What is your foldername you want to save?", async (folderName) => {
-        // create a folder if doesn't have
-        if(!fs.existsSync(`./export/${folderName}`))
-            fs.mkdirSync(`./export/${folderName}`);
+const url = readlineSync.question("What URL you want to scrape?");
+const folderName = readlineSync.question("What is your foldername you want to save?");
 
-        // scraping and downloading
-        await scraping(url, folderName);
-        console.log("Complete.");
+// create a folder if doesn't have
+if(!fs.existsSync(`./export/${folderName}`))
+    fs.mkdirSync(`./export/${folderName}`);
 
-        readline.close();
-    });
-});
+// scraping and downloading
+scraping(url, folderName);
+console.log("Complete.");
