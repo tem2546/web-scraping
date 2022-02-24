@@ -7,9 +7,10 @@ const imgDownloader = require("../downloadMethod/img.js");
  * @param {String} type
  * @param {String} id
  * @param {String} folderName
+ * @param {String} episodes
  * @returns {Promise<Boolean|String>}
  */
-module.exports = function(type, id, folderName) {
+module.exports = function(type, id, episodes, folderName) {
     // Scraping the page and download it
     return new Promise( async (resolve,reject) => {
         try {

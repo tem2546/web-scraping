@@ -29,7 +29,9 @@ const yuta = require("./webHandle/yuta.js");
             const type = ["comic", "manga", "novel"];
             const indexType = readlineSync.keyInSelect(type, "Which type you want to scrape?");
             const seriesId = readlineSync.question("What is ID of the series?");
-            await nekopost(type[indexType], seriesId, folderName);
+            const askEpisodes = "Do you want to scrape all episodes or a specific episode?\nWrite in this format.\nIf you want to scrape all episodes. type -> all\nIf you want to scrape a specific episode. type -> number of that episode EX. 16 for scraping episode 16\nOr type -> range of the episodes EX. 4-23 for scraping episode 4 to episode 23\n"
+            const episodes = readlineSync.question(askEpisodes);
+            await nekopost(type[indexType], seriesId, episodes, folderName);
             break;
         case 1:
             // thatjapanesecourse.com
