@@ -9,7 +9,7 @@
  */
 const fs = require("fs");
 const readlineSync = require("readline-sync")
-const nekopost1 = require("./webHandle/nekopost1.js");
+const nekopost1 = require("./webHandle/nekopost.js");
 const yuta = require("./webHandle/yuta.js");
 
 (async () => {
