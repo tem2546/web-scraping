@@ -39,14 +39,31 @@ function scraping(url, folderName) {
     });
 }
 
-// Receieved data from user
-const url = readlineSync.question("What URL you want to scrape?");
-const folderName = readlineSync.question("What is your foldername you want to save?");
+(async () => {
+    // Receieved data from user
+    const website = ["Nekopost", "Thatjapanesecourse", "Youtube"];
+    const indexWebsite = readlineSync.keyInSelect(website, "What website you want to scrape?");
+    const folderName = readlineSync.question("What is your foldername you want to save?");
 
-// create a folder if doesn't have
-if(!fs.existsSync(`./export/${folderName}`))
-    fs.mkdirSync(`./export/${folderName}`);
+    // create a folder if doesn't exist
+    if(!fs.existsSync(`./export/${folderName}`))
+        fs.mkdirSync(`./export/${folderName}`);
 
-// scraping and downloading
-scraping(url, folderName);
-console.log("Complete.");
+    // scraping and downloading
+    switch(indexWebsite) {
+        case 1:
+            // nekopost.com
+            const type = ["comic", "manga", "novel"];
+            const indexType = readlineSync.keyInSelect(type, "Which type you want to scrape?");
+            const seriesId = readlineSync.question("What is ID of the series?");
+            break;
+        case 2:
+            // thatjapanesecourse.com
+            console.log("This will scrape all of the video in thatjapanesecourse.com");
+            break;
+        case 3:
+            // youtube.com
+            break;
+    }
+    console.log("Complete.");
+})()
