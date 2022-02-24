@@ -12,32 +12,6 @@ const readlineSync = require("readline-sync")
 const puppeteer = require("puppeteer");
 const nekopost1 = require("./webHandle/nekopost1.js");
 const yuta = require("./webHandle/yuta.js");
-// Scraping the page and download it
-/**
- * 
- * @param {String} url 
- * @param {String} sel 
- * @returns {Promise<Array<*>>}
- */
-function scraping(url, folderName) {
-    return new Promise( async (resolve, reject) => {
-        try {
-            // Launch a browser then create a new page and goto the url wanted to scrape
-            const browser = await puppeteer.launch();
-            const page = await browser.newPage();
-
-            if(/nekopost/.test(url)) // domain is nekopost.net
-                await nekopost1(page, url, folderName);
-            else if(/thatjapanesecourse/.test(url)) // domain is thatjapanesecourse.com
-                await yuta(page, url, folderName);
-
-            await browser.close();
-            resolve(true);
-        } catch(err) {
-            reject(err);
-        }
-    });
-}
 
 (async () => {
     // Receieved data from user
