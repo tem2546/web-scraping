@@ -9,7 +9,6 @@
  */
 const fs = require("fs");
 const readlineSync = require("readline-sync")
-const puppeteer = require("puppeteer");
 const nekopost1 = require("./webHandle/nekopost1.js");
 const yuta = require("./webHandle/yuta.js");
 
