@@ -1,5 +1,6 @@
 // Scroll down untill the end
 // Load all src of img elements
+const fs = require("fs");
 const puppeteer = require("puppeteer");
 const imgDownloader = require("../downloadMethod/img.js");
 /**
@@ -21,6 +22,11 @@ module.exports = function(type, id, folderName) {
             // goto url
             await page.goto(seriesUrl, { waitUntil: "networkidle2" });
 
+            //fs.writeFileSync(`./export/${folderName}/data.html`,await page.content());
+            const links = await page.$$eval(".card a", (elements) => {
+                return elements.map( (element) => element.href );
+            });
+            console.log(links);
             // // Scroll down untill the end
             // for(var i=0;i<30;i++)
             //     await page.mouse.wheel( { deltaY: 1000 } );
@@ -40,6 +46,7 @@ module.exports = function(type, id, folderName) {
             //     name += 1;
             // }
             // console.log("Done downloading.");
+            browser.close();
         
             resolve(true);
         } catch(err) {
