@@ -1,6 +1,5 @@
 const fs = require("fs");
 const fetch = require("node-fetch");
-const imgDownloader = require("../downloadMethod/img.js");
 function mangaType(chapterData, chapterFolder)
 {
     return new Promise( async (resolve, reject) => {
@@ -27,7 +26,10 @@ function mangaType(chapterData, chapterFolder)
                 try {
                     img["title"] = img["title"] ? img["title"] : img["fileName"];
                     
-                    await imgDownloader(img["pageName"], "https://www.nekopost.net", chapterFolder, img["title"]);
+                    const res = await fetch(img["pageName"]);
+                    const dest = fs.createWriteStream(`${chapterFolder}/${img["title"]}`);
+                    res.body.pipe(dest);
+
                     resolve(true);
                 } catch(err) {
                     reject(err);
