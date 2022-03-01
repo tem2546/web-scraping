@@ -13,7 +13,7 @@ module.exports = function(url, referer, folderName, name) {
     return new Promise( async (resolve, reject) => {
         try {
             const res = await fetch(url, { referer });
-            const dest = fs.createWriteStream(`./export/${folderName}/${name}.jpg`);
+            const dest = fs.createWriteStream(`${folderName}/${name}`);
             res.body.pipe(dest);
             resolve(true);
         } catch(err) {

@@ -1,8 +1,44 @@
-// Scroll down untill the end
-// Load all src of img elements
 const fs = require("fs");
-const puppeteer = require("puppeteer");
+const fetch = require("node-fetch");
 const imgDownloader = require("../downloadMethod/img.js");
+function mangaType(chapterData, chapterFolder)
+{
+    return new Promise( async (resolve, reject) => {
+        try {
+            // Transform img link
+            const imgLinks = (function (e) {
+                    let t = [],
+                    n = e[0].pageName;
+                    for (let o = 0; o < e.length; o++) {
+                        let a = "https://fs.nekopost.net/collectManga/" 
+                            + chapterData["projectId"] 
+                            + "/" 
+                            + chapterData["chapterId"] 
+                            + "/";
+                        (a += void 0 === n ? e[o].fileName : e[o].pageName),
+                            (e[o].pageName = a),
+                            t.push(e[o]);
+                    }
+                    return t;
+                })(chapterData["pageItem"]); 
+        
+            // Download img
+            imgLinks.forEach( async (img) => {
+                try {
+                    img["title"] = img["title"] ? img["title"] : img["fileName"];
+                    
+                    await imgDownloader(img["pageName"], "https://www.nekopost.net", chapterFolder, img["title"]);
+                    resolve(true);
+                } catch(err) {
+                    reject(err);
+                }
+            })
+            resolve(true);
+        } catch(err) {
+            reject(err);
+        }
+    })
+}
 /**
  * 
  * @param {String} type
@@ -10,44 +46,47 @@ const imgDownloader = require("../downloadMethod/img.js");
  * @param {String} folderName
  * @returns {Promise<Boolean|String>}
  */
-module.exports = function(type, id, folderName) {
+module.exports = function(type, id) {
     // Scraping the page and download it
-    return new Promise( async (resolve,reject) => {
+    return new Promise( async (resolve, reject) => {
         try {
-            // Launch a browser then create a new page and goto the url wanted to scrape
-            const browser = await puppeteer.launch();
-            const page = await browser.newPage();
-            const seriesUrl = "https://www.nekopost.net/" + type + "/" + id;
+            // get project data
+            let projectData = await fetch("https://uatapi.nekopost.net/frontAPI/getProjectInfo/" + id);
+            projectData = await projectData.json();
+            const projectInfo = projectData["projectInfo"], listChapter = projectData["listChapter"];
 
-            // goto url
-            await page.goto(seriesUrl, { waitUntil: "networkidle2" });
+            // projectFolder handle
+            const projectFolder = "./export/" + projectInfo["projectName"];
+            if(!fs.existsSync(projectFolder))
+                fs.mkdirSync(projectFolder);
 
-            //fs.writeFileSync(`./export/${folderName}/data.html`,await page.content());
-            const links = await page.$$eval(".card a", (elements) => {
-                return elements.map( (element) => element.href );
-            });
-            console.log(links);
-            // // Scroll down untill the end
-            // for(var i=0;i<30;i++)
-            //     await page.mouse.wheel( { deltaY: 1000 } );
-            // await page.waitForTimeout(1000);
-            // console.log("Page loaded.");
-        
-            // // Get all src of img element
-            // const srcs = await page.$$eval("img", (elements) => {
-            //     return elements.map( (element) => element.getAttribute("src") );
-            // });
-            // console.log("Received all src.");
+            for(const chapter of listChapter) {
+                // folder handle
+                const chapterFolder = projectFolder + "/" + chapter["chapterNo"] + " - " + chapter["chapterName"];
+                if(!fs.existsSync(chapterFolder))
+                    fs.mkdirSync(chapterFolder);
 
-            // // downloading src
-            // var name = 1;
-            // for(src of srcs) {
-            //     await imgDownloader(src, url, folderName, name);
-            //     name += 1;
-            // }
-            // console.log("Done downloading.");
-            browser.close();
-        
+                // get chapter data
+                const fetchUrl = "https://fs.nekopost.net/collectManga/" 
+                    + projectInfo["projectId"] 
+                    + "/"
+                    + chapter["chapterId"] 
+                    + "/"
+                    + projectInfo["projectId"] + "_" + chapter["chapterId"]
+                    + ".json";
+                let chapterData = await fetch(fetchUrl);
+                chapterData = await chapterData.json();
+
+                switch(type) {
+                    case "manga":
+                        await mangaType(chapterData, chapterFolder);
+                        break;
+                    case "novel":
+                        break;
+                    case "comic":
+                        break;
+                }
+            }
             resolve(true);
         } catch(err) {
             reject(err);
