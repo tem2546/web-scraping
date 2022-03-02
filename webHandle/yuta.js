@@ -2,7 +2,8 @@
 // extract .mp4 of both audio and video
 const puppeteer = require("puppeteer");
 const fs =  require("fs");
-const videoDownloader = require("../downloadMethod/video.js");
+const FFmpeg = require('fluent-ffmpeg');
+//const videoDownloader = require("../downloadMethod/video.js");
 /**
  * 
  * @param {puppeteer.Page} page 
@@ -14,15 +15,6 @@ module.exports = function(page, url, folderName) {
     return new Promise( async (resolve, reject) => {
         
         try {
-            // login and save cookies
-            // await page.goto("https://thatjapanesecourse.com/wp-login.php", { waitUntil: "networkidle2" } );
-            // await page.type("#user_login", "hibiki");
-            // await page.type("#user_pass", "saoandtem1");
-            // await page.click("input[type=submit]");
-            // await page.waitForNavigation();
-            // cookies = { "cookies": await page.cookies() };
-            // fs.writeFileSync("./cookies/yuta.json", JSON.stringify(cookies));
-
             // Load and set cookies
             const cookies = JSON.parse(await fs.readFileSync("./cookies/yuta.json"))["cookies"];
             await page.setCookie(...cookies);
