@@ -1,5 +1,12 @@
 const fs = require("fs");
 const fetch = require("node-fetch");
+
+/**
+ * 
+ * @param {Object} chapterData 
+ * @param {String} chapterFolder 
+ * @returns {Promise<Boolean|String>}
+ */
 function mangaType(chapterData, chapterFolder)
 {
     return new Promise( async (resolve, reject) => {
@@ -24,6 +31,7 @@ function mangaType(chapterData, chapterFolder)
             // Download img
             imgLinks.forEach( async (img) => {
                 try {
+                    // Some images have stored title in a different place
                     img["title"] = img["title"] ? img["title"] : img["fileName"];
                     
                     const res = await fetch(img["pageName"]);
@@ -39,8 +47,35 @@ function mangaType(chapterData, chapterFolder)
         } catch(err) {
             reject(err);
         }
-    })
+    });
 }
+
+function novelType(chapterData, projectFolder) {
+    return new Promise( async (resolve, reject) => {
+        try {
+            // Some chapters have stored novel content in a different place
+            if(!chapterData["novelContent"])
+                chapterData["novelContent"] = chapterData["pageText"];
+            
+            // Add some head, body and change font color
+            const chapterText = `
+            <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <base href="https://www.nekopost.net">
+            </head>
+            <body>` + String(chapterData["novelContent"]).replaceAll("color:#b7b7b7;", "color:#000000;") + `</body>`;
+
+            // Save novel as a HTML file
+            fs.writeFileSync(`${projectFolder}/${chapterData["chapterNo"]}.html`, chapterText);
+
+            resolve(true);
+        } catch(err) {
+            reject(err);
+        }
+    });
+}
+
 /**
  * 
  * @param {String} type
@@ -52,23 +87,24 @@ module.exports = function(type, id) {
     // Scraping the page and download it
     return new Promise( async (resolve, reject) => {
         try {
-            // get project data
+            // Get project data
             let projectData = await fetch("https://uatapi.nekopost.net/frontAPI/getProjectInfo/" + id);
             projectData = await projectData.json();
             const projectInfo = projectData["projectInfo"], listChapter = projectData["listChapter"];
 
-            // projectFolder handle
+            // ProjectFolder handle
             const projectFolder = "./export/" + projectInfo["projectName"];
             if(!fs.existsSync(projectFolder))
                 fs.mkdirSync(projectFolder);
 
             for(const chapter of listChapter) {
-                // folder handle
+                // ChapterFolder handle
                 const chapterFolder = projectFolder + "/" + chapter["chapterNo"] + " - " + chapter["chapterName"];
-                if(!fs.existsSync(chapterFolder))
+                // Only type manga to create more folder because it has many images.
+                if(type == "manga" && !fs.existsSync(chapterFolder))
                     fs.mkdirSync(chapterFolder);
 
-                // get chapter data
+                // Get chapter data
                 const fetchUrl = "https://fs.nekopost.net/collectManga/" 
                     + projectInfo["projectId"] 
                     + "/"
@@ -84,6 +120,7 @@ module.exports = function(type, id) {
                         await mangaType(chapterData, chapterFolder);
                         break;
                     case "novel":
+                        await novelType(chapterData, projectFolder);
                         break;
                     case "comic":
                         break;
