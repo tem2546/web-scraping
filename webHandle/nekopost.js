@@ -78,12 +78,10 @@ function novelType(chapterData, projectFolder) {
 
 /**
  * 
- * @param {String} type
  * @param {String} id
- * @param {String} folderName
  * @returns {Promise<Boolean|String>}
  */
-module.exports = function(type, id) {
+module.exports = function(id) {
     // Scraping the page and download it
     return new Promise( async (resolve, reject) => {
         try {
@@ -91,6 +89,12 @@ module.exports = function(type, id) {
             let projectData = await fetch("https://uatapi.nekopost.net/frontAPI/getProjectInfo/" + id);
             projectData = await projectData.json();
             const projectInfo = projectData["projectInfo"], listChapter = projectData["listChapter"];
+            // project type
+            // m = manga
+            // n = novel
+            // d = orihinal comic
+            // f = original novel
+            const projectType = projectInfo["projectType"];
 
             // ProjectFolder handle
             const projectFolder = "./export/" + projectInfo["projectName"];
@@ -101,7 +105,7 @@ module.exports = function(type, id) {
                 // ChapterFolder handle
                 const chapterFolder = projectFolder + "/" + chapter["chapterNo"] + " - " + chapter["chapterName"];
                 // Only type manga to create more folder because it has many images.
-                if(type == "manga" && !fs.existsSync(chapterFolder))
+                if(( projectType == "m" || projectType == "d" ) && !fs.existsSync(chapterFolder))
                     fs.mkdirSync(chapterFolder);
 
                 // Get chapter data
@@ -115,14 +119,14 @@ module.exports = function(type, id) {
                 let chapterData = await fetch(fetchUrl);
                 chapterData = await chapterData.json();
 
-                switch(type) {
-                    case "manga":
+                switch(projectType) {
+                    case "m":
+                    case "d":
                         await mangaType(chapterData, chapterFolder);
                         break;
-                    case "novel":
+                    case "n":
+                    case "f":
                         await novelType(chapterData, projectFolder);
-                        break;
-                    case "comic":
                         break;
                 }
             }

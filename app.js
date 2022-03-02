@@ -26,10 +26,10 @@ const yuta = require("./webHandle/yuta.js");
     switch(indexWebsite) {
         case 0:
             // nekopost.com
-            const type = ["comic", "manga", "novel"];
-            const indexType = readlineSync.keyInSelect(type, "Which type you want to scrape?");
+            // const type = ["comic", "manga", "novel"];
+            // const indexType = readlineSync.keyInSelect(type, "Which type you want to scrape?");
             const seriesId = readlineSync.question("What is ID of the series?");
-            await nekopost(type[indexType], seriesId);
+            await nekopost(seriesId);
             break;
         case 1:
             // thatjapanesecourse.com
