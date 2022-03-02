@@ -50,6 +50,12 @@ function mangaType(chapterData, chapterFolder)
     });
 }
 
+/**
+ * 
+ * @param {Object} chapterData 
+ * @param {String} chapterFolder 
+ * @returns {Promise<Boolean|String>}
+ */
 function novelType(chapterData, projectFolder) {
     return new Promise( async (resolve, reject) => {
         try {
