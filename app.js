@@ -16,18 +16,11 @@ const yuta = require("./webHandle/yuta.js");
     // Receieved data from user
     const website = ["Nekopost", "Thatjapanesecourse", "Youtube"];
     const indexWebsite = readlineSync.keyInSelect(website, "What website you want to scrape?");
-    // const folderName = readlineSync.question("What is your foldername you want to save?");
-
-    // // create a folder if doesn't exist
-    // if(!fs.existsSync(`./export/${folderName}`))
-    //     fs.mkdirSync(`./export/${folderName}`);
 
     // scraping and downloading
     switch(indexWebsite) {
         case 0:
             // nekopost.com
-            // const type = ["comic", "manga", "novel"];
-            // const indexType = readlineSync.keyInSelect(type, "Which type you want to scrape?");
             const seriesId = readlineSync.question("What is ID of the series?");
             await nekopost(seriesId);
             break;
